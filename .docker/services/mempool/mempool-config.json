@@ -1,0 +1,27 @@
+{
+    "MEMPOOL": {
+        "NETWORK": "regtest",
+        "BACKEND": "electrum",
+        "HTTP_PORT": 8999,
+        "INITIAL_BLOCKS_AMOUNT": 1
+    },
+    "CORE_RPC": {
+        "HOST": "bitcoin",
+        "PORT": 18443,
+        "USERNAME": "root",
+        "PASSWORD": "password"
+    },
+    "ELECTRUM": {
+        "HOST": "electrs",
+        "PORT": 50001,
+        "TLS_ENABLED": false
+    },
+    "DATABASE": {
+        "ENABLED": true,
+        "HOST": "mariadb",
+        "PORT": 3306,
+        "USERNAME": "mempool",
+        "PASSWORD": "mempool",
+        "DATABASE": "mempool"
+    }
+}

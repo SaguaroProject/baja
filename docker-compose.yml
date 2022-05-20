@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+
+  bitcoin:
+    container_name: bitcoin
+    build: 
+      target: bitcoin
+      context: .docker/services/bitcoin
+    volumes:
+      - node_blockchain_data:/var/lib/bitcoind
+    ports:
+     - 18444:18444
+     - 18443:18443
+
+  peer:
+    container_name: bitcoin-peer
+    build: 
+      target: bitcoin-peer
+      context: .docker/services/bitcoin
+    volumes:
+      - peer_blockchain_data:/var/lib/bitcoind
+    ports:
+     - 18445:18444
+
+  electrs:
+    container_name: electrum-server
+    build: 
+      context: .docker/services/electrs
+    volumes:
+      - electrum_server_data:/var/lib/electrs
+    ports:
+      - 50001:50001
+    depends_on:
+      - bitcoin
+
+  mempool:
+    container_name: mempool
+    build: 
+      context: .docker/services/mempool
+    ports:
+      - 3001:80
+    depends_on:
+      - bitcoin
+      - electrs
+      - mariadb
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.4
+    volumes:
+      - mempool_mariadb_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: mempool
+      MYSQL_USER: mempool
+      MYSQL_PASSWORD: mempool
+      MYSQL_ROOT_PASSWORD: password
+
+volumes:
+  node_blockchain_data:
+  peer_blockchain_data:
+  electrum_server_data:
+  mempool_mariadb_data:
