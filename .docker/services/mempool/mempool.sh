@@ -24,30 +24,32 @@ __DATABASE_DATABASE__=${MEMPOOL_DATABASE_DATABASE:=mempool}
 __DATABASE_USERNAME__=${MEMPOOL_DATABASE_USERNAME:=mempool}
 __DATABASE_PASSWORD__=${MEMPOOL_DATABASE_PASSWORD:=mempool}
 
+MEMPOOL_CONFIG=/usr/local/src/mempool/backend/mempool-config.json
+
 function start() {
 
     #
     # Write environment variables to the config file
     #
-    sed -i "s@__MEMPOOL_NETWORK__@${__MEMPOOL_NETWORK__}@g" mempool-config.json
-    sed -i "s@__MEMPOOL_BACKEND__@${__MEMPOOL_BACKEND__}@g" mempool-config.json
-    sed -i "s@__MEMPOOL_INITIAL_BLOCKS_AMOUNT__@${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}@g" mempool-config.json
+    sed -i "s@__MEMPOOL_NETWORK__@${__MEMPOOL_NETWORK__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__MEMPOOL_BACKEND__@${__MEMPOOL_BACKEND__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__MEMPOOL_INITIAL_BLOCKS_AMOUNT__@${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}@g" $MEMPOOL_CONFIG
 
-    sed -i "s@__CORE_RPC_HOST__@${__CORE_RPC_HOST__}@g" mempool-config.json
-    sed -i "s@__CORE_RPC_PORT__@${__CORE_RPC_PORT__}@g" mempool-config.json
-    sed -i "s@__CORE_RPC_USERNAME__@${__CORE_RPC_USERNAME__}@g" mempool-config.json
-    sed -i "s@__CORE_RPC_PASSWORD__@${__CORE_RPC_PASSWORD__}@g" mempool-config.json
+    sed -i "s@__CORE_RPC_HOST__@${__CORE_RPC_HOST__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__CORE_RPC_PORT__@${__CORE_RPC_PORT__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__CORE_RPC_USERNAME__@${__CORE_RPC_USERNAME__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__CORE_RPC_PASSWORD__@${__CORE_RPC_PASSWORD__}@g" $MEMPOOL_CONFIG
 
-    sed -i "s@__ELECTRUM_HOST__@${__ELECTRUM_HOST__}@g" mempool-config.json
-    sed -i "s@__ELECTRUM_PORT__@${__ELECTRUM_PORT__}@g" mempool-config.json
-    sed -i "s@__ELECTRUM_TLS_ENABLED__@${__ELECTRUM_TLS_ENABLED__}@g" mempool-config.json
+    sed -i "s@__ELECTRUM_HOST__@${__ELECTRUM_HOST__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__ELECTRUM_PORT__@${__ELECTRUM_PORT__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__ELECTRUM_TLS_ENABLED__@${__ELECTRUM_TLS_ENABLED__}@g" $MEMPOOL_CONFIG
 
-    sed -i "s@__DATABASE_ENABLED__@${__DATABASE_ENABLED__}@g" mempool-config.json
-    sed -i "s@__DATABASE_HOST__@${__DATABASE_HOST__}@g" mempool-config.json
-    sed -i "s@__DATABASE_PORT__@${__DATABASE_PORT__}@g" mempool-config.json
-    sed -i "s@__DATABASE_DATABASE__@${__DATABASE_DATABASE__}@g" mempool-config.json
-    sed -i "s@__DATABASE_USERNAME__@${__DATABASE_USERNAME__}@g" mempool-config.json
-    sed -i "s@__DATABASE_PASSWORD__@${__DATABASE_PASSWORD__}@g" mempool-config.json
+    sed -i "s@__DATABASE_ENABLED__@${__DATABASE_ENABLED__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__DATABASE_HOST__@${__DATABASE_HOST__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__DATABASE_PORT__@${__DATABASE_PORT__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__DATABASE_DATABASE__@${__DATABASE_DATABASE__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__DATABASE_USERNAME__@${__DATABASE_USERNAME__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__DATABASE_PASSWORD__@${__DATABASE_PASSWORD__}@g" $MEMPOOL_CONFIG
 
     #
     # Start the mempool backend server

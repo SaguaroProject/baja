@@ -9,20 +9,22 @@ __BITCOIN_RPC_PASSWORD__=${ELECTRS_BITCOIN_RPC_PASSWORD:=bitcoin}
 __ELECTRUM_RPC_ADDRESS__=${ELECTRS_ELECTRUM_RPC_ADDRESS:=0.0.0.0}
 __ELECTRUM_RPC_PORT__=${ELECTRS_ELECTRUM_RPC_PORT:=50001}
 
+ELECTRS_CONFIG=/etc/electrs/config.toml
+
 function start() {
 
     #
     # Write environment variables to the config file
     #
-    sed -i "s@__BITCOIN_HOST__@${__BITCOIN_HOST__}@g" /etc/electrs/config.toml
-    sed -i "s@__BITCOIN_NETWORK__@${__BITCOIN_NETWORK__}@g" /etc/electrs/config.toml
-    sed -i "s@__BITCOIN_P2P_PORT__@${__BITCOIN_P2P_PORT__}@g" /etc/electrs/config.toml
-    sed -i "s@__BITCOIN_RPC_PORT__@${__BITCOIN_RPC_PORT__}@g" /etc/electrs/config.toml
-    sed -i "s@__BITCOIN_RPC_USERNAME__@${__BITCOIN_RPC_USERNAME__}@g" /etc/electrs/config.toml
-    sed -i "s@__BITCOIN_RPC_PASSWORD__@${__BITCOIN_RPC_PASSWORD__}@g" /etc/electrs/config.toml
+    sed -i "s@__BITCOIN_HOST__@${__BITCOIN_HOST__}@g" $ELECTRS_CONFIG
+    sed -i "s@__BITCOIN_NETWORK__@${__BITCOIN_NETWORK__}@g" $ELECTRS_CONFIG
+    sed -i "s@__BITCOIN_P2P_PORT__@${__BITCOIN_P2P_PORT__}@g" $ELECTRS_CONFIG
+    sed -i "s@__BITCOIN_RPC_PORT__@${__BITCOIN_RPC_PORT__}@g" $ELECTRS_CONFIG
+    sed -i "s@__BITCOIN_RPC_USERNAME__@${__BITCOIN_RPC_USERNAME__}@g" $ELECTRS_CONFIG
+    sed -i "s@__BITCOIN_RPC_PASSWORD__@${__BITCOIN_RPC_PASSWORD__}@g" $ELECTRS_CONFIG
 
-    sed -i "s@__ELECTRUM_RPC_ADDRESS__@${__ELECTRUM_RPC_ADDRESS__}@g" /etc/electrs/config.toml
-    sed -i "s@__ELECTRUM_RPC_PORT__@${__ELECTRUM_RPC_PORT__}@g" /etc/electrs/config.toml
+    sed -i "s@__ELECTRUM_RPC_ADDRESS__@${__ELECTRUM_RPC_ADDRESS__}@g" $ELECTRS_CONFIG
+    sed -i "s@__ELECTRUM_RPC_PORT__@${__ELECTRUM_RPC_PORT__}@g" $ELECTRS_CONFIG
 
     #
     # Start the electrs server
