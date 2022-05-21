@@ -35,7 +35,7 @@ RUN apt -y install  git \
 #
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
     . ~/.nvm/nvm.sh && \
-    nvm install v16.10.0 && \
+    nvm install ${NODE_VERSION} && \
     nvm alias default ${NODE_VERSION} && \
     npm install -g npm
 
