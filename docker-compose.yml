@@ -13,7 +13,6 @@ services:
      - 18444:18444
      - 18443:18443
     environment:
-      BITCOIN_DEFAULT_WALLET: default
       BITCOIN_RPC_SERVER_ENABLED: 1
       BITCOIN_RPC_AUTH_CREDENTIALS: "bitcoin:99ab01ce75f87d87f9639645d24a1443$$9ef4d35ea95682a25dd8f41663bf53f5ede888ce09255328c7f2fdb129210961"
       BITCOIN_ALLOW_RPC_ADDRESS: 0.0.0.0/0
@@ -31,7 +30,6 @@ services:
     ports:
      - 18445:18444
     environment:
-      BITCOIN_DEFAULT_WALLET: default
       BITCOIN_REGTEST_ENABLED: 1
       BITCOIN_REGTEST_PEER_HOST: bitcoin
 
