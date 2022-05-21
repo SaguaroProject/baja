@@ -1,27 +1,26 @@
 {
     "MEMPOOL": {
-        "NETWORK": "regtest",
-        "BACKEND": "electrum",
-        "HTTP_PORT": 8999,
-        "INITIAL_BLOCKS_AMOUNT": 1
+        "NETWORK": "__MEMPOOL_NETWORK__",
+        "BACKEND": "__MEMPOOL_BACKEND__",
+        "INITIAL_BLOCKS_AMOUNT": __MEMPOOL_INITIAL_BLOCKS_AMOUNT__
     },
     "CORE_RPC": {
-        "HOST": "bitcoin",
-        "PORT": 18443,
-        "USERNAME": "root",
-        "PASSWORD": "password"
+        "HOST": "__CORE_RPC_HOST__",
+        "PORT": __CORE_RPC_PORT__,
+        "USERNAME": "__CORE_RPC_USERNAME__",
+        "PASSWORD": "__CORE_RPC_PASSWORD__"
     },
     "ELECTRUM": {
-        "HOST": "electrs",
-        "PORT": 50001,
-        "TLS_ENABLED": false
+        "HOST": "__ELECTRUM_HOST__",
+        "PORT": __ELECTRUM_PORT__,
+        "TLS_ENABLED": __ELECTRUM_TLS_ENABLED__
     },
     "DATABASE": {
-        "ENABLED": true,
-        "HOST": "mariadb",
-        "PORT": 3306,
-        "USERNAME": "mempool",
-        "PASSWORD": "mempool",
-        "DATABASE": "mempool"
+        "ENABLED": __DATABASE_ENABLED__,
+        "HOST": "__DATABASE_HOST__",
+        "PORT": __DATABASE_PORT__,
+        "DATABASE": "__DATABASE_DATABASE__",
+        "USERNAME": "__DATABASE_USERNAME__",
+        "PASSWORD": "__DATABASE_PASSWORD__"
     }
 }
