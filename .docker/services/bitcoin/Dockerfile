@@ -71,6 +71,11 @@ RUN echo 'alias bitcoin="bitcoin-cli -datadir=/var/lib/bitcoind -conf=/etc/bitco
 COPY supervisord.conf /etc/supervisord.conf
 
 #
+# Copy bitcoind init
+#
+COPY bitcoind.sh /etc/init.d/bitcoind.sh
+
+#
 # Start supervisord
 #
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

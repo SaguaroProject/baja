@@ -12,7 +12,14 @@ services:
     ports:
      - 18444:18444
      - 18443:18443
-
+    environment:
+      BITCOIN_RPC_SERVER_ENABLED: 1
+      BITCOIN_RPC_AUTH_CREDENTIALS: "root:604dbfc75861c529c3f18c0ea79b7274$$ce621931ea4ffca91ad965478d0a877347def92ea31ecc1e2c4b4e9f38416573"
+      BITCOIN_ALLOW_RPC_ADDRESS: 0.0.0.0/0
+      BITCOIN_TXINDEX_ENABLED: 1
+      BITCOIN_REGTEST_ENABLED: 1
+      BITCOIN_REGTEST_RPC_BIND_ADDRESS: 0.0.0.0
+      
   peer:
     container_name: bitcoin-peer
     build: 
@@ -22,6 +29,9 @@ services:
       - peer_blockchain_data:/var/lib/bitcoind
     ports:
      - 18445:18444
+    environment:
+      BITCOIN_REGTEST_ENABLED: 1
+      BITCOIN_REGTEST_PEER_HOST: bitcoin
 
   electrs:
     container_name: electrum-server
