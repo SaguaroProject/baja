@@ -34,14 +34,14 @@ services:
     depends_on:
       - bitcoin
     environment:
-      ELECTRS_BITCOIN_HOSTNAME: bitcoin
+      ELECTRS_BITCOIN_HOST: bitcoin
       ELECTRS_BITCOIN_NETWORK: regtest
       ELECTRS_BITCOIN_P2P_PORT: 18444
       ELECTRS_BITCOIN_RPC_PORT: 18443
       ELECTRS_BITCOIN_RPC_USERNAME: root
       ELECTRS_BITCOIN_RPC_PASSWORD: password
-      ELECTRS_ELECTRUM_HOST: 0.0.0.0
-      ELECTRS_ELECTRUM_PORT: 50001
+      ELECTRS_ELECTRUM_RPC_ADDRESS: 0.0.0.0
+      ELECTRS_ELECTRUM_RPC_PORT: 50001
 
   mempool:
     container_name: mempool
@@ -58,16 +58,16 @@ services:
       MEMPOOL_NETWORK: regetest
       MEMPOOL_BACKEND: electrum
       MEMPOOL_INITIAL_BLOCKS_AMOUNT: 1
-      CORE_RPC_HOST: bitcoin
-      CORE_RPC_PORT: 18443
-      CORE_RPC_USERNAME: root
-      CORE_RPC_PASSWORD: password
-      ELECTRUM_HOST: electrs
-      ELECTRUM_PORT: 50001
-      DATABASE_HOST: mariadb
-      DATABASE_DATABASE: mempool
-      DATABASE_USERNAME: mempool
-      DATABASE_PASSWORD: mempool
+      MEMPOOL_BITCOIN_HOST: bitcoin
+      MEMPOOL_BITCOIN_RPC_PORT: 18443
+      MEMPOOL_BITCOIN_RPC_USERNAME: root
+      MEMPOOL_BITCOIN_RPC_PASSWORD: password
+      MEMPOOL_ELECTRUM_HOST: electrs
+      MEMPOOL_ELECTRUM_PORT: 50001
+      MEMPOOL_DATABASE_HOST: mariadb
+      MEMPOOL_DATABASE_DATABASE: mempool
+      MEMPOOL_DATABASE_USERNAME: mempool
+      MEMPOOL_DATABASE_PASSWORD: mempool
 
   mariadb:
     container_name: mariadb
