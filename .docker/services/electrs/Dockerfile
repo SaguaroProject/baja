@@ -64,6 +64,11 @@ COPY config.toml /etc/electrs/config.toml
 COPY supervisord.conf /etc/supervisord.conf
 
 #
+# Copy electrs init
+#
+COPY electrs.sh /etc/init.d/electrs.sh
+
+#
 # Start supervisord
 #
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

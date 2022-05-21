@@ -33,6 +33,15 @@ services:
       - 50001:50001
     depends_on:
       - bitcoin
+    environment:
+      ELECTRS_BITCOIN_HOSTNAME: bitcoin
+      ELECTRS_BITCOIN_NETWORK: regtest
+      ELECTRS_BITCOIN_P2P_PORT: 18444
+      ELECTRS_BITCOIN_RPC_PORT: 18443
+      ELECTRS_BITCOIN_RPC_USERNAME: root
+      ELECTRS_BITCOIN_RPC_PASSWORD: password
+      ELECTRS_ELECTRUM_HOST: 0.0.0.0
+      ELECTRS_ELECTRUM_PORT: 50001
 
   mempool:
     container_name: mempool
