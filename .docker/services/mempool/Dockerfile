@@ -95,6 +95,11 @@ COPY supervisord.conf /etc/supervisord.conf
 COPY mempool.sh /etc/init.d/mempool.sh
 
 #
+# Copy nginx init
+#
+COPY nginx.sh /etc/init.d/nginx.sh
+
+#
 # Start supervisord
 #
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]

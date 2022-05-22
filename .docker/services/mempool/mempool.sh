@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # MEMPOOL
-__MEMPOOL_NETWORK__=${MEMPOOL_NETWORK:=regtest}
+__MEMPOOL_CHAIN__=${MEMPOOL_BITCOIN_CHAIN:=regtest}
 __MEMPOOL_BACKEND__=${MEMPOOL_BACKEND:=electrum}
 __MEMPOOL_INITIAL_BLOCKS_AMOUNT__=${MEMPOOL_INITIAL_BLOCKS_AMOUNT:=1}
 
@@ -26,12 +26,15 @@ __DATABASE_PASSWORD__=${MEMPOOL_DATABASE_PASSWORD:=mempool}
 
 MEMPOOL_CONFIG=/usr/local/src/mempool/backend/mempool-config.json
 
+#
+# Start the mempool backend server
+#
 function start() {
 
     #
     # Write environment variables to the config file
     #
-    sed -i "s@__MEMPOOL_NETWORK__@${__MEMPOOL_NETWORK__}@g" $MEMPOOL_CONFIG
+    sed -i "s@__MEMPOOL_CHAIN__@${__MEMPOOL_CHAIN__}@g" $MEMPOOL_CONFIG
     sed -i "s@__MEMPOOL_BACKEND__@${__MEMPOOL_BACKEND__}@g" $MEMPOOL_CONFIG
     sed -i "s@__MEMPOOL_INITIAL_BLOCKS_AMOUNT__@${__MEMPOOL_INITIAL_BLOCKS_AMOUNT__}@g" $MEMPOOL_CONFIG
 
@@ -57,13 +60,24 @@ function start() {
     ~/.nvm/nvm-exec npm start
 }
 
+#
+# Get the status of the mempool process
+#
+function status() {
+    supervisorctl status mempool
+}
+
 case "$1" in 
     start)
-       start
-       ;;
+        start
+        ;;
+    status)
+        status
+        ;;
     *)
-       echo "Usage: $0 {start}"
-       ;;
+        echo "Usage: $0 {start|status}"
+        exit 1
+        ;;
 esac
 
 exit 0

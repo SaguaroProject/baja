@@ -1,6 +1,6 @@
 {
     "MEMPOOL": {
-        "NETWORK": "__MEMPOOL_NETWORK__",
+        "NETWORK": "__MEMPOOL_CHAIN__",
         "BACKEND": "__MEMPOOL_BACKEND__",
         "INITIAL_BLOCKS_AMOUNT": __MEMPOOL_INITIAL_BLOCKS_AMOUNT__
     },

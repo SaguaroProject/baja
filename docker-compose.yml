@@ -31,10 +31,10 @@ services:
      - 18445:18444
     environment:
       BITCOIN_REGTEST_ENABLED: 1
-      BITCOIN_REGTEST_PEER_HOST: bitcoin
+      BITCOIN_REGTEST_PEER: bitcoin
 
   electrs:
-    container_name: electrum-server
+    container_name: electrs
     build: 
       context: .docker/services/electrs
     volumes:
@@ -45,7 +45,7 @@ services:
       - bitcoin
     environment:
       ELECTRS_BITCOIN_HOST: bitcoin
-      ELECTRS_BITCOIN_NETWORK: regtest
+      ELECTRS_BITCOIN_CHAIN: regtest
       ELECTRS_BITCOIN_P2P_PORT: 18444
       ELECTRS_BITCOIN_RPC_PORT: 18443
       ELECTRS_BITCOIN_RPC_USERNAME: bitcoin
@@ -65,9 +65,9 @@ services:
       - electrs
       - mariadb
     environment:
-      MEMPOOL_NETWORK: regetest
       MEMPOOL_BACKEND: electrum
       MEMPOOL_INITIAL_BLOCKS_AMOUNT: 1
+      MEMPOOL_BITCOIN_CHAIN: regtest
       MEMPOOL_BITCOIN_HOST: bitcoin
       MEMPOOL_BITCOIN_RPC_PORT: 18443
       MEMPOOL_BITCOIN_RPC_USERNAME: bitcoin
