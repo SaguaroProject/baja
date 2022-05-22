@@ -14,24 +14,24 @@ services:
      - 18443:18443
     environment:
       BITCOIN_RPC_SERVER_ENABLED: 1
-      BITCOIN_RPC_AUTH_CREDENTIALS: "bitcoin:99ab01ce75f87d87f9639645d24a1443$$9ef4d35ea95682a25dd8f41663bf53f5ede888ce09255328c7f2fdb129210961"
+      BITCOIN_RPC_USERNAME: bitcoin
+      BITCOIN_RPC_PASSWORD: bitcoin
       BITCOIN_ALLOW_RPC_ADDRESS: 0.0.0.0/0
       BITCOIN_TXINDEX_ENABLED: 1
       BITCOIN_REGTEST_CHAIN_ENABLED: 1
       BITCOIN_REGTEST_RPC_BIND_ADDRESS: 0.0.0.0
       
   peer:
-    container_name: bitcoin-peer
+    container_name: peer
     build: 
       target: bitcoin-peer
       context: .docker/services/bitcoin
     volumes:
       - peer_blockchain_data:/var/lib/bitcoind
-    ports:
-     - 18445:18444
     environment:
       BITCOIN_REGTEST_ENABLED: 1
-      BITCOIN_REGTEST_PEER: bitcoin
+      BITCOIN_REGTEST_PEER_HOST: bitcoin
+      BITCOIN_REGTEST_PEER_PORT: 18444
 
   electrs:
     container_name: electrs
@@ -39,6 +39,7 @@ services:
       context: .docker/services/electrs
     volumes:
       - electrum_server_data:/var/lib/electrs
+      - node_blockchain_data:/var/lib/bitcoind:ro
     ports:
       - 50001:50001
     depends_on:
