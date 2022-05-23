@@ -2,7 +2,7 @@
 
 __RPC_SERVER_ENABLED__=${BITCOIN_RPC_SERVER_ENABLED:=1}
 __RPC_ALLOW_IP_ADDRESS__=${BITCOIN_RPC_ALLOW_ADDRESS:=0.0.0.0/0}
-__TXINDEX_ENABLED__=${BITCOIN_TXINDEX_ENABLED:=1}
+__TX_INDEX_ENABLED__=${BITCOIN_TX_INDEX_ENABLED:=1}
 __REGTEST_CHAIN_ENABLED__=${BITCOIN_REGTEST_CHAIN_ENABLED:=1}
 __REGTEST_RPC_BIND_ADDRESS__=${BITCOIN_REGTEST_RPC_BIND_ADDRESS:=0.0.0.0}
 __REGTEST_PEER_HOST__=${BITCOIN_REGTEST_PEER_HOST:=bitcoin}
@@ -56,7 +56,7 @@ function start() {
     #
     /usr/local/bin/bitcoind -conf=$BITCOIN_CONFIG \
                             -datadir=$BITCOIN_DATA_DIR \
-                            -fallbackfee=${BITCOIN_FALLBACK_FEE:=0.00001}
+                            -fallbackfee=${BITCOIN_TX_FALLBACK_FEE:=0.00001}
 }
 
 #
