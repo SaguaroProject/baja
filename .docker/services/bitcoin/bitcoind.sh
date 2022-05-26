@@ -15,7 +15,6 @@ __RPC_AUTH_CREDENTIALS__=$(/usr/local/src/bitcoin/share/rpcauth/rpcauth.py $BITC
 
 BITCOIN_CONFIG=/etc/bitcoin.conf
 BITCOIN_DATA_DIR=/var/lib/bitcoind
-BITCOIN_DEFAULT_WALLET=default
 BITCOIN_CLI="bitcoin-cli -conf=$BITCOIN_CONFIG -datadir=$BITCOIN_DATA_DIR"
 
 #
@@ -25,10 +24,10 @@ function createwallet() {
     $BITCOIN_CLI getwalletinfo > /dev/null 2>&1
 
     if [ $? -eq 0 ]; then
-        echo "\"$BITCOIN_DEFAULT_WALLET\" wallet already exists"
+        echo "\"default\" wallet already exists"
     else
-        $BITCOIN_CLI createwallet $BITCOIN_DEFAULT_WALLET false false "" false true true false > /dev/null 2>&1
-        $BITCOIN_CLI -rpcwallet=$BITCOIN_DEFAULT_WALLET generatetoaddress 101 $($BITCOIN_CLI getnewaddress) > /dev/null 2>&1
+        $BITCOIN_CLI createwallet default false false "" false true true false > /dev/null 2>&1
+        $BITCOIN_CLI generatetoaddress 101 $($BITCOIN_CLI getnewaddress) > /dev/null 2>&1
     fi
 }
 
@@ -40,7 +39,7 @@ function start() {
     #
     # Write environment variables to the config file
     #
-    sed -i "s@__TXINDEX_ENABLED__@${__TXINDEX_ENABLED__}@g" $BITCOIN_CONFIG
+    sed -i "s@__TX_INDEX_ENABLED__@${__TX_INDEX_ENABLED__}@g" $BITCOIN_CONFIG
     
     sed -i "s@__RPC_SERVER_ENABLED__@${__RPC_SERVER_ENABLED__}@g" $BITCOIN_CONFIG
     sed -i "s@__RPC_AUTH_CREDENTIALS__@${__RPC_AUTH_CREDENTIALS__}@g" $BITCOIN_CONFIG
