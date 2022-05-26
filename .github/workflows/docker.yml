@@ -49,7 +49,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .docker/services/{{ matrix.target }}
+          context: .docker/services/${{ matrix.target }}
           platforms: linux/amd64
           target: ${{ matrix.target }}
           push: ${{ github.event_name != 'pull_request' }}
