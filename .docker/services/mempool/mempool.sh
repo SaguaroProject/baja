@@ -67,6 +67,34 @@ function status() {
     supervisorctl status mempool
 }
 
+#
+# Check if MariaDB is running and the mempool database has been created
+#
+function wait() {
+    command="mysql --host $__DATABASE_HOST__ --port $__DATABASE_PORT__ -u$__DATABASE_USERNAME__ -p$__DATABASE_PASSWORD__ $__DATABASE_DATABASE__"
+    attempt=0
+    ret_val=1
+
+    until [ $attempt = 3 ] || $command > /dev/null 2>&1
+    do
+        seconds=$((5 * attempt))
+        ret_val=$?
+        attempt=$((attempt + 1))
+        echo "Unable to connect to to MariaDB. Trying again in ${seconds}s..."
+        sleep ${seconds}s
+    done
+
+    if [ $ret_val = 0 ]; then
+        echo "Successfully connected to MariaDB."
+    else
+        echo "Unable to connect to MariaDB. Exiting."
+        exit 1
+    fi
+}
+
+# Wait for MariaDB to start
+wait
+
 case "$1" in 
     start)
         start
