@@ -1,4 +1,4 @@
-FROM ubuntu:latest AS bitcoin-core
+FROM ubuntu:latest AS bitcoin
 
 #
 # Set the default bitcoin core version
@@ -76,26 +76,11 @@ COPY supervisord.conf /etc/supervisord.conf
 COPY bitcoind.sh /etc/init.d/bitcoind.sh
 
 #
-# Start supervisord
-#
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
-
-#
-# Configure bitcoin service
-#
-FROM bitcoin-core AS bitcoin
-
-#
 # Copy configuration
 #
 COPY bitcoin.conf /etc/bitcoin.conf
 
 #
-# Configure bitcoin peer service
+# Start supervisord
 #
-FROM bitcoin-core AS bitcoin-peer
-
-#
-# Copy configuration
-#
-COPY bitcoin-peer.conf /etc/bitcoin.conf
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

@@ -4,9 +4,7 @@ services:
 
   bitcoin:
     container_name: bitcoin
-    build: 
-      target: bitcoin
-      context: .docker/services/bitcoin
+    image: ghcr.io/ericgreen-dev/bitcoin:master
     volumes:
       - node_blockchain_data:/var/lib/bitcoind
     ports:
@@ -18,26 +16,13 @@ services:
       BITCOIN_RPC_PASSWORD: bitcoin
       BITCOIN_RPC_ALLOW_ADDRESS: 0.0.0.0/0
       BITCOIN_TX_INDEX_ENABLED: 1
-      BITCOIN_TX_FALLBACK_FEE: 0.00001
+      BITCOIN_TX_FALLBACK_FEE: '0.00001'
       BITCOIN_REGTEST_CHAIN_ENABLED: 1
       BITCOIN_REGTEST_RPC_BIND_ADDRESS: 0.0.0.0
-      
-  peer:
-    container_name: peer
-    build: 
-      target: bitcoin-peer
-      context: .docker/services/bitcoin
-    volumes:
-      - peer_blockchain_data:/var/lib/bitcoind
-    environment:
-      BITCOIN_REGTEST_ENABLED: 1
-      BITCOIN_REGTEST_PEER_HOST: bitcoin
-      BITCOIN_REGTEST_PEER_PORT: 18444
 
   electrs:
     container_name: electrs
-    build: 
-      context: .docker/services/electrs
+    image: ghcr.io/ericgreen-dev/electrs:master
     volumes:
       - electrum_server_data:/var/lib/electrs
       - node_blockchain_data:/var/lib/bitcoind:ro
@@ -54,6 +39,17 @@ services:
       ELECTRS_BITCOIN_RPC_PASSWORD: bitcoin
       ELECTRS_ELECTRUM_RPC_ADDRESS: 0.0.0.0
       ELECTRS_ELECTRUM_RPC_PORT: 50001
+      
+  bitcoin-peer:
+    container_name: peer
+    build:
+      context: .docker/services/bitcoin-peer
+    volumes:
+      - peer_blockchain_data:/var/lib/bitcoind
+    environment:
+      BITCOIN_REGTEST_ENABLED: 1
+      BITCOIN_REGTEST_PEER_HOST: bitcoin
+      BITCOIN_REGTEST_PEER_PORT: 18444
 
   mempool:
     container_name: mempool
