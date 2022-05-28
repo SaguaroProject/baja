@@ -18,16 +18,19 @@ BITCOIN_DATA_DIR=/var/lib/bitcoind
 BITCOIN_CLI="bitcoin-cli -conf=$BITCOIN_CONFIG -datadir=$BITCOIN_DATA_DIR"
 
 #
-# Create a new default wallet and mine 101 blocks to "mature" the first 50 BTC block reward
+# Create a new default wallet and mine the first 50 BTC block reward
 #
 function createwallet() {
     $BITCOIN_CLI getwalletinfo > /dev/null 2>&1
 
     if [ $? -eq 0 ]; then
-        echo "\"default\" wallet already exists"
+        echo "A wallet has already been created."
     else
-        $BITCOIN_CLI createwallet default false false "" false true true false > /dev/null 2>&1
-        $BITCOIN_CLI generatetoaddress 101 $($BITCOIN_CLI getnewaddress) > /dev/null 2>&1
+        wallet=$1
+        echo "Creating new wallet..."
+        $BITCOIN_CLI createwallet ${wallet:=default} false false "" false true true false > /dev/null 2>&1
+        echo "Mining first block..."
+        $BITCOIN_CLI generatetoaddress 1 $($BITCOIN_CLI getnewaddress) > /dev/null 2>&1
     fi
 }
 
@@ -73,7 +76,7 @@ case "$1" in
         status
         ;;
     createwallet)
-        createwallet
+        createwallet $2
         ;;
     *)
         echo "Usage: $0 {start|status|createwallet}"

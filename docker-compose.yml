@@ -43,7 +43,8 @@ services:
   bitcoin-peer:
     container_name: peer
     build:
-      context: .docker/services/bitcoin-peer
+      context: .docker/services/bitcoin
+      target: bitcoin-peer
     volumes:
       - peer_blockchain_data:/var/lib/bitcoind
     environment:

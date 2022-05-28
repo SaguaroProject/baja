@@ -84,3 +84,13 @@ COPY bitcoin.conf /etc/bitcoin.conf
 # Start supervisord
 #
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+
+#
+# Use pre-build image for peer
+#
+FROM ghcr.io/ericgreen-dev/bitcoin:master AS bitcoin-peer
+
+#
+# Copy configuration
+#
+COPY bitcoin.conf /etc/bitcoin.conf

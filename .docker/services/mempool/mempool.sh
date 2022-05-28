@@ -27,9 +27,54 @@ __DATABASE_PASSWORD__=${MEMPOOL_DATABASE_PASSWORD:=mempool}
 MEMPOOL_CONFIG=/usr/local/src/mempool/backend/mempool-config.json
 
 #
+# Call bitcoin JSON-RPC
+#
+function rpc() {
+    curl -s \
+        --user $__CORE_RPC_USERNAME__:$__CORE_RPC_PASSWORD__ \
+        --data-binary '{"jsonrpc":"1.0","id":"curltext","method":"getblockchaininfo","params":[]}' \
+        -H 'content-type:text/plain;' \
+        $__CORE_RPC_HOST__:$__CORE_RPC_PORT__
+}
+
+#
+# Check if MariaDB is running and the mempool database has been created
+#
+function try_mariadb_connect() {
+    until mysql --host $__DATABASE_HOST__ --port $__DATABASE_PORT__ -u$__DATABASE_USERNAME__ -p$__DATABASE_PASSWORD__ $__DATABASE_DATABASE__ -e 'SHOW TABLES;' > /dev/null 2>&1
+    do
+        echo "Unable to connect to to MariaDB. Trying again in 5s..."
+        sleep 5s
+    done
+
+    echo "Successfully connected to MariaDB."
+}
+
+#
+# Check to see if there is at least 1 block on the chain
+#
+try_bitcoin_rpc() {
+    until [ $(rpc | jq '.result.blocks') -gt 0 ]
+    do
+        echo "No blocks found. Trying again in 5s."
+        sleep 5s
+    done
+}
+
+#
 # Start the mempool backend server
 #
 function start() {
+
+    #
+    # Wait for MariaDB to start
+    #
+    try_mariadb_connect
+
+    #
+    # Wait until there is at least 1 block
+    #
+    try_bitcoin_rpc
 
     #
     # Write environment variables to the config file
@@ -67,35 +112,7 @@ function status() {
     supervisorctl status mempool
 }
 
-#
-# Check if MariaDB is running and the mempool database has been created
-#
-function wait() {
-    command="mysql --host $__DATABASE_HOST__ --port $__DATABASE_PORT__ -u$__DATABASE_USERNAME__ -p$__DATABASE_PASSWORD__ $__DATABASE_DATABASE__"
-    attempt=0
-    ret_val=1
-
-    until [ $attempt = 3 ] || $command > /dev/null 2>&1
-    do
-        seconds=$((5 * attempt))
-        ret_val=$?
-        attempt=$((attempt + 1))
-        echo "Unable to connect to to MariaDB. Trying again in ${seconds}s..."
-        sleep ${seconds}s
-    done
-
-    if [ $ret_val = 0 ]; then
-        echo "Successfully connected to MariaDB."
-    else
-        echo "Unable to connect to MariaDB. Exiting."
-        exit 1
-    fi
-}
-
-# Wait for MariaDB to start
-wait
-
-case "$1" in 
+case "$1" in
     start)
         start
         ;;

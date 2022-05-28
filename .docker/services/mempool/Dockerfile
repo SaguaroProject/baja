@@ -28,6 +28,7 @@ RUN apt -y install  git \
                     nginx \
                     curl \
                     rsync \
+                    jq \
                     supervisor
 
 #
