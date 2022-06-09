@@ -4,7 +4,7 @@ services:
 
   bitcoin:
     container_name: bitcoin
-    image: ghcr.io/ericgreen-dev/bitcoin:master
+    image: ghcr.io/saguaroproject/bitcoin:master
     volumes:
       - node_blockchain_data:/var/lib/bitcoind
     ports:
@@ -22,7 +22,7 @@ services:
 
   electrs:
     container_name: electrs
-    image: ghcr.io/ericgreen-dev/electrs:master
+    image: ghcr.io/saguaroproject/electrs:master
     volumes:
       - electrum_server_data:/var/lib/electrs
       - node_blockchain_data:/var/lib/bitcoind:ro
