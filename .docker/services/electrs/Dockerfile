@@ -54,11 +54,6 @@ RUN ln -s ${SOURCE_DIR}/target/release/electrs /usr/local/bin/electrs
 COPY config.toml /etc/electrs/config.toml
 
 #
-# Copy electrs config
-#
-COPY config.toml /etc/electrs/config.toml
-
-#
 # Copy supervisor configuration
 #
 COPY supervisord.conf /etc/supervisord.conf

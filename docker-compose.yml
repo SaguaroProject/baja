@@ -1,7 +1,5 @@
 version: '3.7'
-
 services:
-
   bitcoin:
     container_name: bitcoin
     image: ghcr.io/saguaroproject/bitcoin:master
@@ -19,7 +17,6 @@ services:
       BITCOIN_TX_FALLBACK_FEE: '0.00001'
       BITCOIN_REGTEST_CHAIN_ENABLED: 1
       BITCOIN_REGTEST_RPC_BIND_ADDRESS: 0.0.0.0
-
   electrs:
     container_name: electrs
     image: ghcr.io/saguaroproject/electrs:master
@@ -39,7 +36,16 @@ services:
       ELECTRS_BITCOIN_RPC_PASSWORD: bitcoin
       ELECTRS_ELECTRUM_RPC_ADDRESS: 0.0.0.0
       ELECTRS_ELECTRUM_RPC_PORT: 50001
-      
+  esplora:
+    container_name: esplora
+    build:
+      context: .docker/services/esplora
+      target: esplora
+    volumes:
+      - node_blockchain_data:/var/lib/bitcoind:ro
+    ports:
+      - 3000:3000
+      - 5000:5000
   bitcoin-peer:
     container_name: peer
     build:
@@ -51,48 +57,7 @@ services:
       BITCOIN_REGTEST_ENABLED: 1
       BITCOIN_REGTEST_PEER_HOST: bitcoin
       BITCOIN_REGTEST_PEER_PORT: 18444
-
-  mempool:
-    container_name: mempool
-    build: 
-      context: .docker/services/mempool
-    ports:
-      - 3001:80
-      - 3002:8999
-    depends_on:
-      - bitcoin
-      - electrs
-      - mariadb
-    environment:
-      MEMPOOL_BACKEND: electrum
-      MEMPOOL_INITIAL_BLOCKS_AMOUNT: 1
-      MEMPOOL_BITCOIN_CHAIN: regtest
-      MEMPOOL_BITCOIN_HOST: bitcoin
-      MEMPOOL_BITCOIN_RPC_PORT: 18443
-      MEMPOOL_BITCOIN_RPC_USERNAME: bitcoin
-      MEMPOOL_BITCOIN_RPC_PASSWORD: bitcoin
-      MEMPOOL_ELECTRUM_HOST: electrs
-      MEMPOOL_ELECTRUM_PORT: 50001
-      MEMPOOL_DATABASE_HOST: mariadb
-      MEMPOOL_DATABASE_DATABASE: mempool
-      MEMPOOL_DATABASE_USERNAME: mempool
-      MEMPOOL_DATABASE_PASSWORD: mempool
-
-  mariadb:
-    container_name: mariadb
-    image: mariadb:10.4
-    volumes:
-      - mempool_mariadb_data:/var/lib/mysql
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_DATABASE: mempool
-      MYSQL_USER: mempool
-      MYSQL_PASSWORD: mempool
-      MYSQL_ROOT_PASSWORD: password
-
 volumes:
   node_blockchain_data:
   peer_blockchain_data:
   electrum_server_data:
-  mempool_mariadb_data:
