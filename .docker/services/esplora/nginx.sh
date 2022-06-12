@@ -1,17 +1,16 @@
 #!/usr/bin/bash
 
-#
-# Start esplora
+# Start nginx
 #
 function start() {
-    . ~/.nvm/nvm.sh && npm run dev-server
+    /usr/sbin/nginx -g 'daemon off;'
 }
 
 #
-# Get the status of the esplora process
+# Get the status of the nginx process
 #
 function status() {
-    supervisorctl status esplora
+    supervisorctl status nginx
 }
 
 case "$1" in 

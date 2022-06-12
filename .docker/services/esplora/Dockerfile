@@ -20,10 +20,12 @@ RUN apt update && apt -y upgrade
 #
 RUN apt -y install  curl \
                     git \
+                    rsync \
                     clang \
                     cmake \
                     build-essential \
                     cargo \
+                    nginx \
                     supervisor
 
 #
@@ -57,7 +59,13 @@ RUN cd ${SOURCE_DIR}/electrs && \
 #
 RUN cd ${SOURCE_DIR}/esplora && \
     . ~/.nvm/nvm.sh && \
-    npm install
+    npm install && \
+    npm run dist
+
+#
+# Copy dist directory
+#
+RUN rsync -av --delete ${SOURCE_DIR}/esplora/dist/ /var/www
 
 #
 # Symlink to /usr/local/bin
@@ -65,9 +73,9 @@ RUN cd ${SOURCE_DIR}/esplora && \
 RUN ln -s ${SOURCE_DIR}/electrs/target/release/electrs /usr/local/bin/electrs
 
 #
-# Copy electrs config
+# Copy nginx config
 #
-COPY config.toml /etc/electrs/config.toml
+COPY nginx.conf /etc/nginx/nginx.conf
 
 #
 # Copy supervisor configuration
@@ -75,9 +83,9 @@ COPY config.toml /etc/electrs/config.toml
 COPY supervisord.conf /etc/supervisord.conf
 
 #
-# Copy esplora init
+# Copy nginx init
 #
-COPY esplora.sh /etc/init.d/esplora.sh
+COPY nginx.sh /etc/init.d/nginx.sh
 
 #
 # Copy electrs init
