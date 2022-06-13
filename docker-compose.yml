@@ -1,62 +1,33 @@
 version: '3.7'
 services:
+
   bitcoin:
     container_name: bitcoin
-    image: ghcr.io/saguaroproject/bitcoin:master
+    build:
+      context: .docker/services/bitcoin
     volumes:
-      - node_blockchain_data:/var/lib/bitcoind
+      - bitcoind_data:/var/lib/bitcoind
     ports:
      - 18444:18444
      - 18443:18443
     environment:
-      BITCOIN_RPC_SERVER_ENABLED: 1
       BITCOIN_RPC_USERNAME: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
-      BITCOIN_RPC_ALLOW_ADDRESS: 0.0.0.0/0
-      BITCOIN_TX_INDEX_ENABLED: 1
       BITCOIN_TX_FALLBACK_FEE: '0.00001'
-      BITCOIN_REGTEST_CHAIN_ENABLED: 1
-      BITCOIN_REGTEST_RPC_BIND_ADDRESS: 0.0.0.0
-  electrs:
-    container_name: electrs
-    image: ghcr.io/saguaroproject/electrs:master
-    volumes:
-      - electrum_server_data:/var/lib/electrs
-      - node_blockchain_data:/var/lib/bitcoind:ro
-    ports:
-      - 50001:50001
-    depends_on:
-      - bitcoin
-    environment:
-      ELECTRS_BITCOIN_HOST: bitcoin
-      ELECTRS_BITCOIN_CHAIN: regtest
-      ELECTRS_BITCOIN_P2P_PORT: 18444
-      ELECTRS_BITCOIN_RPC_PORT: 18443
-      ELECTRS_BITCOIN_RPC_USERNAME: bitcoin
-      ELECTRS_BITCOIN_RPC_PASSWORD: bitcoin
-      ELECTRS_ELECTRUM_RPC_ADDRESS: 0.0.0.0
-      ELECTRS_ELECTRUM_RPC_PORT: 50001
+
   esplora:
     container_name: esplora
     build:
       context: .docker/services/esplora
-      target: esplora
     volumes:
-      - node_blockchain_data:/var/lib/bitcoind:ro
+      - bitcoind_data:/var/lib/bitcoind:ro
+      - electrum_data:/var/lib/electrs
     ports:
       - 80:80
-  bitcoin-peer:
-    container_name: peer
-    build:
-      context: .docker/services/bitcoin
-      target: bitcoin-peer
-    volumes:
-      - peer_blockchain_data:/var/lib/bitcoind
     environment:
-      BITCOIN_REGTEST_ENABLED: 1
-      BITCOIN_REGTEST_PEER_HOST: bitcoin
-      BITCOIN_REGTEST_PEER_PORT: 18444
+      BITCOIN_RPC_HOST: bitcoin
+      BITCOIN_RPC_PORT: 18443
+
 volumes:
-  node_blockchain_data:
-  peer_blockchain_data:
-  electrum_server_data:
+  bitcoind_data:
+  electrum_data:

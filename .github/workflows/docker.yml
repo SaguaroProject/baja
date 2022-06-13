@@ -8,7 +8,7 @@ on:
       - v*.*.*
   pull_request:
     branches:
-      - master
+    - master
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [bitcoin, electrs]
+        target: [bitcoin, esplora]
 
     steps:
       - name: Checkout source code
