@@ -7,7 +7,7 @@ OS=$(uname -s)
 PLATFORM=$(uname -m)
 
 # Options
-OUTPUT=/dev/stdout
+QUIET=false
 
 # Output colors
 COLOR_INFO='\033[0;32m'
@@ -50,7 +50,14 @@ die() {
 # Execute a shell command
 #
 execute() {
-    exec "${@} > ${OUTPUT}"
+    OUTPUT=$("${@}" 2>&1)
+    RC=$?
+
+    if [ $QUIET = false ]; then
+        echo "$OUTPUT"
+    fi
+    
+    exit $RC
 }
 
 #
@@ -61,6 +68,7 @@ help() {
     Usage: $SCRIPT [-q] COMMAND [ARGS...]
     available commands:
       rpc                 Execute a JSON-RPC command
+      exec                Execute a shell command in a container
     optional arguments:
       -h, --help          Show this help message and exit
       -q, --quiet         Surpress all output
@@ -71,10 +79,17 @@ EOF
 }
 
 #
+# Execute a command in the docker container
+#
+docker_exec() {
+    execute docker exec "${@}"
+}
+
+#
 # Send a JSON-RPC command to the bitcoin service
 #
 rpc() {
-    execute docker exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
+    docker_exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
 }
 
 #
@@ -82,7 +97,7 @@ rpc() {
 #
 case $1 in
   -q|--quiet)
-    OUTPUT="/dev/null 2>&1"
+    QUIET=true
     shift
     ;;
 esac
@@ -94,6 +109,12 @@ case $1 in
     rpc)
         shift
         rpc "${@:---help}"
+        ;;
+    exec)
+        CONTAINER=$2
+        shift 2
+
+        docker_exec $CONTAINER "${@}"
         ;;
     *|-h|--help)
         help
