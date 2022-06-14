@@ -1,20 +1,102 @@
-#!/bin/bash
+#!/bin/sh
+
+# Environment
+COMMAND=$1
+SCRIPT=$0
+OS=$(uname -s)
+PLATFORM=$(uname -m)
+
+# Options
+OUTPUT=/dev/stdout
+
+# Output colors
+COLOR_INFO='\033[0;32m'
+COLOR_ERROR='\033[0;31m'
+COLOR_WARN='\033[0;33m'
+COLOR_NONE='\033[0m'
+
+#
+# Write to the console
+#
+console() {
+  color=$COLOR_NONE;
+
+  case "$1" in
+    warn)
+      color=$COLOR_WARN;
+      shift
+      ;;
+    error)
+      color=$COLOR_ERROR;
+      shift
+      ;;
+    info)
+      color=$COLOR_INFO;
+      shift
+      ;;
+  esac
+
+  echo "${color}${@}" > $OUTPUT
+}
+
+#
+# Print a message and exit
+#
+die() {
+  console error $1 && exit ${2:-1}
+}
+
+#
+# Execute a shell command
+#
+execute() {
+    exec "${@} > ${OUTPUT}"
+}
+
+#
+# Print program help text
+#
+help() {
+  help=$(cat << EOF
+    Usage: $SCRIPT [-q] COMMAND [ARGS...]
+    available commands:
+      rpc                 Execute a JSON-RPC command
+    optional arguments:
+      -h, --help          Show this help message and exit
+      -q, --quiet         Surpress all output
+EOF
+)
+
+  console info "${help}\n" && exit 0
+}
 
 #
 # Send a JSON-RPC command to the bitcoin service
 #
-function rpc() {
-    docker exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
+rpc() {
+    execute docker exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
 }
 
+#
+# Parse command options
+#
+case $1 in
+  -q|--quiet)
+    OUTPUT="/dev/null 2>&1"
+    shift
+    ;;
+esac
+
+#
+# Parse commands and arguments
+#
 case $1 in
     rpc)
-        COMMAND=$1; shift
-        $COMMAND "${@}"
+        shift
+        rpc "${@:---help}"
         ;;
-    *)
-        echo "Usage: $0 {rpc}"
-        exit 1
+    *|-h|--help)
+        help
         ;;
 esac
 

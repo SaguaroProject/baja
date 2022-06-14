@@ -24,6 +24,7 @@ services:
       - electrum_data:/var/lib/electrs
     ports:
       - 80:80
+      - 50001:50001
     environment:
       BITCOIN_RPC_HOST: bitcoin
       BITCOIN_RPC_PORT: 18443
