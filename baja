@@ -8,6 +8,7 @@ PLATFORM=$(uname -m)
 
 # Options
 QUIET=false
+VERBOSE=0
 
 # Output colors
 COLOR_INFO='\033[0;32m'
@@ -19,42 +20,42 @@ COLOR_NONE='\033[0m'
 # Write to the console
 #
 console() {
-  color=$COLOR_NONE;
+    if [ $VERBOSE -ge "${3:-0}" ]; then
+        case "$1" in
+            warn)
+                color=$COLOR_WARN;
+                ;;
+            error)
+                color=$COLOR_ERROR;
+                ;;
+            info)
+                color=$COLOR_INFO;
+                ;;
+            log)
+                color=$COLOR_NONE;
+                ;;
+        esac
 
-  case "$1" in
-    warn)
-      color=$COLOR_WARN;
-      shift
-      ;;
-    error)
-      color=$COLOR_ERROR;
-      shift
-      ;;
-    info)
-      color=$COLOR_INFO;
-      shift
-      ;;
-  esac
-
-  echo "${color}${@}" > $OUTPUT
+        echo "${color}${2}"
+    fi
 }
 
 #
 # Print a message and exit
 #
 die() {
-  console error $1 && exit ${2:-1}
+  console error "$1" && exit ${2:-1}
 }
 
 #
 # Execute a shell command
 #
 execute() {
-    OUTPUT=$("${@}" 2>&1)
+    OUT=$("${@}" 2>&1)
     RC=$?
 
     if [ $QUIET = false ]; then
-        echo "$OUTPUT"
+        console log "$OUT"
     fi
     
     exit $RC
@@ -65,13 +66,14 @@ execute() {
 #
 help() {
   help=$(cat << EOF
-    Usage: $SCRIPT [-q] COMMAND [ARGS...]
+    Usage: $SCRIPT [-qv] COMMAND [ARGS...]
     available commands:
       rpc                 Execute a JSON-RPC command
       exec                Execute a shell command in a container
     optional arguments:
       -h, --help          Show this help message and exit
       -q, --quiet         Surpress all output
+      -v, --verbose       Show verbose output
 EOF
 )
 
@@ -98,6 +100,10 @@ rpc() {
 case $1 in
   -q|--quiet)
     QUIET=true
+    shift
+    ;;
+  -v|--verbose)
+    VERBOSE=1
     shift
     ;;
 esac
