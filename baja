@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# Send a JSON-RPC command to the bitcoin service
+#
+function rpc() {
+    docker exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
+}
+
+case $1 in
+    rpc)
+        COMMAND=$1; shift
+        $COMMAND "${@}"
+        ;;
+    *)
+        echo "Usage: $0 {rpc}"
+        exit 1
+        ;;
+esac
+
+exit 0
