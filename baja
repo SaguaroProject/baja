@@ -1,130 +1,51 @@
-#!/bin/sh
+#!/usr/bin/env python
 
-# Environment
-COMMAND=$1
-SCRIPT=$0
-OS=$(uname -s)
-PLATFORM=$(uname -m)
+import argparse
+import subprocess
 
-# Options
-QUIET=false
-VERBOSE=0
+def sys_call(command):
+    '''Execute a shell command'''
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout, stderr = process.communicate()
 
-# Output colors
-COLOR_INFO='\033[0;32m'
-COLOR_ERROR='\033[0;31m'
-COLOR_WARN='\033[0;33m'
-COLOR_NONE='\033[0m'
+    return (
+        stdout.decode('utf-8').rstrip(),
+        stderr.decode('utf-8').rstrip(),
+        process.wait()
+    )
 
-#
-# Write to the console
-#
-console() {
-    if [ $VERBOSE -ge "${3:-0}" ]; then
-        case "$1" in
-            warn)
-                color=$COLOR_WARN;
-                ;;
-            error)
-                color=$COLOR_ERROR;
-                ;;
-            info)
-                color=$COLOR_INFO;
-                ;;
-            log)
-                color=$COLOR_NONE;
-                ;;
-        esac
+def docker_exec(args, extras):
+    '''Execute a command in a docker container'''
+    stdout, stderr, result = sys_call("docker exec " + args.container + " " + " ".join(args.command + extras))
+    print(stdout)
+    print(stderr)
+    print(result)
 
-        echo "${color}${2}"
-    fi
-}
+def json_rpc(args, extras):
+    '''Execute a JSON-RPC command'''
+    stdout, stderr, result = sys_call("docker exec bitcoin bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind " + " ".join(args.command + extras))
+    print(stdout)
+    print(stderr)
+    print(result)
 
-#
-# Print a message and exit
-#
-die() {
-  console error "$1" && exit ${2:-1}
-}
+parser = argparse.ArgumentParser()
+parser.add_argument('--version', action='version', version='%(prog)s 1.0')
+parser.set_defaults(func=lambda x, y: parser.print_usage())
 
-#
-# Execute a shell command
-#
-execute() {
-    OUT=$("${@}" 2>&1)
-    RC=$?
+subparser = parser.add_subparsers(title='available commands')
 
-    if [ $QUIET = false ]; then
-        console log "$OUT"
-    fi
-    
-    exit $RC
-}
+parser_exec = subparser.add_parser('exec', help='execute a command in a docker container')
+parser_exec.add_argument('container', help='the container to execute the command in')
+parser_exec.add_argument('command', help='the command to execute', nargs=argparse.REMAINDER)
+parser_exec.set_defaults(func=docker_exec)
 
-#
-# Print program help text
-#
-help() {
-  help=$(cat << EOF
-    Usage: $SCRIPT [-qv] COMMAND [ARGS...]
-    available commands:
-      rpc                 Execute a JSON-RPC command
-      exec                Execute a shell command in a container
-    optional arguments:
-      -h, --help          Show this help message and exit
-      -q, --quiet         Surpress all output
-      -v, --verbose       Show verbose output
-EOF
-)
+parser_rpc = subparser.add_parser('rpc', help='execute a JSON-RPC command')
+parser_rpc.add_argument('command', help='the RPC command to execute', nargs=argparse.REMAINDER)
+parser_rpc.set_defaults(func=json_rpc)
 
-  console info "${help}\n" && exit 0
-}
+output_group = parser.add_mutually_exclusive_group()
+output_group.add_argument('-q', '--quiet', action='store_true', help='suppress all command output')
+output_group.add_argument('-v', '--verbose', dest='verbosity', default=0, action='count', help='increase output verbosity')
 
-#
-# Execute a command in the docker container
-#
-docker_exec() {
-    execute docker exec "${@}"
-}
-
-#
-# Send a JSON-RPC command to the bitcoin service
-#
-rpc() {
-    docker_exec bitcoin bash -c "bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind ${@}"
-}
-
-#
-# Parse command options
-#
-case $1 in
-  -q|--quiet)
-    QUIET=true
-    shift
-    ;;
-  -v|--verbose)
-    VERBOSE=1
-    shift
-    ;;
-esac
-
-#
-# Parse commands and arguments
-#
-case $1 in
-    rpc)
-        shift
-        rpc "${@:---help}"
-        ;;
-    exec)
-        CONTAINER=$2
-        shift 2
-
-        docker_exec $CONTAINER "${@}"
-        ;;
-    *|-h|--help)
-        help
-        ;;
-esac
-
-exit 0
+(args, extras) = parser.parse_known_args()
+args.func(args, extras)
