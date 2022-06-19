@@ -13,13 +13,13 @@ from console import Color, Console
 @patch('console.colored')
 class ConsoleTest(TestCase):
     '''Tests for the console helper'''
-    
+
     def test_write(self, mock_cprint, _):
         '''Test that write() is called with the default color'''
         console = Console()
         console.print('test')
 
-        assert mock_cprint.mock_calls == [call('test', Console.DEFAULT_COLOR)]
+        assert mock_cprint.mock_calls == [call('test', Console.DEFAULT_COLOR.value)]
 
     def test_colors(self, mock_cprint, _):
         '''Test that helpers set the proper colors'''
