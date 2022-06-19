@@ -20,6 +20,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
 
     - name: Run unit tests
       run: python -m unittest discover tests/python "*_test.py"
