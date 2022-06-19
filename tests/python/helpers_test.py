@@ -12,6 +12,7 @@ class HelpersTest(TestCase):
     '''Tests for helper functions'''
 
     def test_count_str_chars(self):
+        '''Test counting the the instances of a character in a string'''
         string = 'The quick brown fox jumps over the lazy dog'
 
         self.assertEqual(helpers.count_str_chars(string, 's'), 1)
