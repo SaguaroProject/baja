@@ -10,41 +10,40 @@ class Color(Enum):
     WARN = 'yellow'
     ERROR = 'red'
 
+class Output:
+    '''Side effect wrapper for printing to the console'''
+
+    def print(self, message: str, color: Color):
+        '''Print a message to the terminal'''
+        cprint(colored(message, color.value))
+
+
 class Console:
     '''Console helper'''
 
     DEFAULT_COLOR = Color.INFO
 
-    def __init__(self, verbosity: str = ''):
+    def __init__(self, output: Output, verbosity: str = ''):
+        self.__output = output
         self.__verbosity = verbosity
 
-    @property
-    def verbosity(self) -> str:
-        '''Get the configured verbosity level'''
-        return self.__verbosity
-
-    @verbosity.setter
-    def verbosity(self, verbosity: str):
-        '''Set how verbose the output should be [v,vv,vvv,vvvv]'''
-        self.__verbosity = verbosity
-
-    def print(self, message: str, color: Color = DEFAULT_COLOR, verbose: str = ''):
+    def __print(self, message: str, color: Color = DEFAULT_COLOR, verbose: str = ''):
         '''Print a message to the console'''
         if count_str_chars(verbose, 'v') <= count_str_chars(self.__verbosity, 'v'):
-            cprint(colored(message, color.value))
+            self.__output.print(message, color)
 
     def info(self, message: str, verbose: str = ''):
         '''Print an info message to the console'''
-        self.print(message, Color.INFO, verbose)
+        self.__print(message, Color.INFO, verbose)
 
     def success(self, message: str, verbose: str = ''):
         '''Print a success message to the console'''
-        self.print(message, Color.SUCCESS, verbose)
+        self.__print(message, Color.SUCCESS, verbose)
 
     def warn(self, message: str, verbose: str = ''):
         '''Print a warning message to the console'''
-        self.print(message, Color.WARN, verbose)
+        self.__print(message, Color.WARN, verbose)
 
     def error(self, message: str, verbose: str = ''):
         '''Print an error message to the console'''
-        self.print(message, Color.ERROR, verbose)
+        self.__print(message, Color.ERROR, verbose)
