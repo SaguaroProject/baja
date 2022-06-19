@@ -1,3 +1,4 @@
+'''Output logging utility'''
 
 from enum import Enum
 from termcolor import colored, cprint
@@ -16,7 +17,6 @@ class Output:
     def write(self, message: str, color: Color):
         '''Print a message to the terminal'''
         cprint(colored(message, color.value))
-
 
 class Logger:
     '''Log helper'''

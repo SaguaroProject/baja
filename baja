@@ -1,85 +1,105 @@
 #!/usr/bin/env python
 
-import argparse
+import os
 import sys
 
-from enum import Enum
-from subprocess import Popen, PIPE
-from termcolor import colored, cprint
+sys.path.append(os.path.join(os.path.dirname(__file__), './src'))
 
-def sys_call(command):
-    '''Execute a command in the shell environment'''
-    process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
-    (stdout, stderr) = process.communicate()
+from application import Application
+from docker_exec import DockerExec
 
-    return (stdout.decode('utf-8').rstrip(), stderr.decode('utf-8').rstrip(), process.wait())
+APP_VERSION = 'v0.0.1'
 
-class Console:
-    '''Console helper class'''
+app = Application(__file__, APP_VERSION)
 
-    def __init__(self, args):
-        self.args = args
+# Register application commands
+app.register_command('exec', DockerExec)
+# app.register_command('rpc', 'JsonRpc')
 
-    class Color(Enum):
-        '''Console output colors'''
-        INFO = 'white'
-        SUCCESS = 'green'
-        WARN = 'yellow'
-        ERROR = 'red'
+# Start the application
+sys.exit(app.run())
 
-    def write(self, message, color, verbose = ''):
-        '''Print a message to the console'''
-        if not self.args.quiet and len(list(filter(lambda x: x == 'v', [*verbose]))) <= self.args.verbosity:
-            cprint(colored(message, color))
+# import argparse
+# import sys
 
-    def info(self, message, verbose = ''):
-        '''Print an info message to the console'''
-        self.write(message, self.Color.INFO.value, verbose)
+# from enum import Enum
 
-    def success(self, message, verbose = ''):
-        '''Print a success message to the console'''
-        self.write(message, self.Color.SUCCESS.value, verbose)
+# from subprocess import Popen, PIPE
+# from termcolor import colored, cprint
 
-    def warn(self, message, verbose = ''):
-        '''Print a warning message to the console'''
-        self.write(message, self.Color.WARN.value, verbose)
+# def sys_call(command):
+#     '''Execute a command in the shell environment'''
+#     process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+#     (stdout, stderr) = process.communicate()
 
-    def error(self, message, verbose = ''):
-        '''Print an error message to the console'''
-        self.write(message, self.Color.ERROR.value, verbose)
+#     return (stdout.decode('utf-8').rstrip(), stderr.decode('utf-8').rstrip(), process.wait())
 
-    def exec(self, command):
-        '''Execute a shell command'''
-        (stdout, stderr, result) = sys_call(command)
-        self.info(stdout if stderr == '' else stderr)
-        sys.exit(result)
+# class Console:
+#     '''Console helper class'''
 
-def docker_exec(args, extras):
-    '''Execute a command in a docker container'''
-    Console(args).exec("docker exec " + args.container + " " + " ".join(args.command + extras))
+#     def __init__(self, args):
+#         self.args = args
 
-def json_rpc(args, extras):
-    '''Execute a JSON-RPC command'''
-    Console(args).exec("docker exec bitcoin bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind " + " ".join(args.command + extras))
+#     class Color(Enum):
+#         '''Console output colors'''
+#         INFO = 'white'
+#         SUCCESS = 'green'
+#         WARN = 'yellow'
+#         ERROR = 'red'
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--version', action='version', version='%(prog)s v0.0.1')
-parser.set_defaults(func=lambda x, y: parser.print_usage())
+#     def write(self, message, color, verbose = ''):
+#         '''Print a message to the console'''
+#         if not self.args.quiet and len(list(filter(lambda x: x == 'v', [*verbose]))) <= self.args.verbosity:
+#             cprint(colored(message, color))
 
-subparser = parser.add_subparsers(title='available commands')
+#     def info(self, message, verbose = ''):
+#         '''Print an info message to the console'''
+#         self.write(message, self.Color.INFO.value, verbose)
 
-parser_exec = subparser.add_parser('exec', help='execute a command in a docker container')
-parser_exec.add_argument('container', help='the container to execute the command in')
-parser_exec.add_argument('command', help='the command to execute', nargs=argparse.REMAINDER)
-parser_exec.set_defaults(func=docker_exec)
+#     def success(self, message, verbose = ''):
+#         '''Print a success message to the console'''
+#         self.write(message, self.Color.SUCCESS.value, verbose)
 
-parser_rpc = subparser.add_parser('rpc', help='execute a JSON-RPC command')
-parser_rpc.add_argument('command', help='the RPC command to execute', nargs=argparse.REMAINDER)
-parser_rpc.set_defaults(func=json_rpc)
+#     def warn(self, message, verbose = ''):
+#         '''Print a warning message to the console'''
+#         self.write(message, self.Color.WARN.value, verbose)
 
-output_group = parser.add_mutually_exclusive_group()
-output_group.add_argument('-q', '--quiet', action='store_true', help='suppress all command output')
-output_group.add_argument('-v', '--verbose', dest='verbosity', default=0, action='count', help='increase output verbosity')
+#     def error(self, message, verbose = ''):
+#         '''Print an error message to the console'''
+#         self.write(message, self.Color.ERROR.value, verbose)
 
-(args, extras) = parser.parse_known_args()
-args.func(args, extras)
+#     def exec(self, command):
+#         '''Execute a shell command'''
+#         (stdout, stderr, result) = sys_call(command)
+#         self.info(stdout if stderr == '' else stderr)
+#         sys.exit(result)
+
+# def docker_exec(args, extras):
+#     '''Execute a command in a docker container'''
+#     Console(args).exec("docker exec " + args.container + " " + " ".join(args.command + extras))
+
+# def json_rpc(args, extras):
+#     '''Execute a JSON-RPC command'''
+#     Console(args).exec("docker exec bitcoin bitcoin-cli -conf=/etc/bitcoin.conf -datadir=/var/lib/bitcoind " + " ".join(args.command + extras))
+
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--version', action='version', version='%(prog)s v0.0.1')
+# parser.set_defaults(func=lambda x, y: parser.print_usage())
+
+# subparser = parser.add_subparsers(title='available commands')
+
+# parser_exec = subparser.add_parser('exec', help='execute a command in a docker container')
+# parser_exec.add_argument('container', help='the container to execute the command in')
+# parser_exec.add_argument('command', help='the command to execute', nargs=argparse.REMAINDER)
+# parser_exec.set_defaults(func=docker_exec)
+
+# parser_rpc = subparser.add_parser('rpc', help='execute a JSON-RPC command')
+# parser_rpc.add_argument('command', help='the RPC command to execute', nargs=argparse.REMAINDER)
+# parser_rpc.set_defaults(func=json_rpc)
+
+# output_group = parser.add_mutually_exclusive_group()
+# output_group.add_argument('-q', '--quiet', action='store_true', help='suppress all command output')
+# output_group.add_argument('-v', '--verbose', dest='verbosity', default=0, action='count', help='increase output verbosity')
+
+# (args, extras) = parser.parse_known_args()
+# args.func(args, extras)

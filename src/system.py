@@ -1,3 +1,5 @@
+'''System helpers and utilities'''
+
 import subprocess
 from typing import Tuple
 
