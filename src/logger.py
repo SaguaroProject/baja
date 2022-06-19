@@ -13,13 +13,13 @@ class Color(Enum):
 class Output:
     '''Side effect wrapper for printing to the console'''
 
-    def print(self, message: str, color: Color):
+    def write(self, message: str, color: Color):
         '''Print a message to the terminal'''
         cprint(colored(message, color.value))
 
 
-class Console:
-    '''Console helper'''
+class Logger:
+    '''Log helper'''
 
     DEFAULT_COLOR = Color.INFO
 
@@ -27,23 +27,23 @@ class Console:
         self.__output = output
         self.__verbosity = verbosity
 
-    def __print(self, message: str, color: Color = DEFAULT_COLOR, verbose: str = ''):
+    def __log(self, message: str, color: Color = DEFAULT_COLOR, verbose: str = ''):
         '''Print a message to the console'''
         if count_str_chars(verbose, 'v') <= count_str_chars(self.__verbosity, 'v'):
-            self.__output.print(message, color)
+            self.__output.write(message, color)
 
     def info(self, message: str, verbose: str = ''):
-        '''Print an info message to the console'''
-        self.__print(message, Color.INFO, verbose)
+        '''Log an info message'''
+        self.__log(message, Color.INFO, verbose)
 
     def success(self, message: str, verbose: str = ''):
-        '''Print a success message to the console'''
-        self.__print(message, Color.SUCCESS, verbose)
+        '''Log a success message'''
+        self.__log(message, Color.SUCCESS, verbose)
 
     def warn(self, message: str, verbose: str = ''):
-        '''Print a warning message to the console'''
-        self.__print(message, Color.WARN, verbose)
+        '''Log a warning message'''
+        self.__log(message, Color.WARN, verbose)
 
     def error(self, message: str, verbose: str = ''):
-        '''Print an error message to the console'''
-        self.__print(message, Color.ERROR, verbose)
+        '''Log an error message'''
+        self.__log(message, Color.ERROR, verbose)
