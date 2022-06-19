@@ -1,0 +1,25 @@
+name: Run Unit Tests
+
+on:
+  push:
+
+jobs:
+  test:
+    name: test ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10']
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python: ${{ matrix.python }}
+        architecture: x64
+
+    - name: Run unit tests
+      run: python -m unittest discover tests/python "*_test.py"
