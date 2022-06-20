@@ -29,6 +29,10 @@ class Application:
         (args, extras) = self.__parser.parse_known_args()
         args.func(args, extras)
 
+    def configure(self, func: callable) -> None:
+        '''Additional configuration for the application'''
+        func(self.__parser)
+
     def register_command(self, command: str, cls):
         '''Register a new command'''
         controller = cls()

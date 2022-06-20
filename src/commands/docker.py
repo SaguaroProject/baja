@@ -4,7 +4,7 @@ import sys
 
 from command import Command
 
-class DockerExec(Command):
+class ExecCommand(Command):
 
     @property
     def help(self) -> str:
