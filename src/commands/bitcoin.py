@@ -18,3 +18,4 @@ class JsonRpcCommand(Command):
         print('in handle()')
         print(args)
         print(extras)
+        self.log.error('this is a message', 'v')

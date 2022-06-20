@@ -33,7 +33,7 @@ class LoggerTest(TestCase):
     def test_verbose_output(self, mock_output):
         '''Test that output is output in verbose mode'''
         message = 'testing'
-        log = Logger(mock_output, 'v')
+        log = Logger(mock_output, 1)
 
         log.info(message)
         log.info(message, 'v')

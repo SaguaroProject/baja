@@ -23,14 +23,24 @@ class Logger:
 
     DEFAULT_COLOR = Color.INFO
 
-    def __init__(self, output: Output, verbosity: str = ''):
+    def __init__(self, output: Output, verbosity: int = 0):
         self.__output = output
         self.__verbosity = verbosity
 
     def __log(self, message: str, color: Color = DEFAULT_COLOR, verbose: str = ''):
         '''Print a message to the console'''
-        if count_str_chars(verbose, 'v') <= count_str_chars(self.__verbosity, 'v'):
+        if count_str_chars(verbose, 'v') <= self.__verbosity:
             self.__output.write(message, color)
+
+    @property
+    def verbosity(self) -> int:
+        '''Get the output verbosity'''
+        return self.__verbosity
+
+    @verbosity.setter
+    def verbosity(self, verbosity: int):
+        '''Set the output verbosity'''
+        self.__verbosity = verbosity
 
     def info(self, message: str, verbose: str = ''):
         '''Log an info message'''

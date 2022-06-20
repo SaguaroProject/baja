@@ -1,9 +1,10 @@
 '''The entrypoint of the application'''
 
 import argparse
+from logger import Logger, Output
 
 class Application:
-    '''The application entrypoint'''
+    '''Application entrypoint'''
 
     def __init__(self, name: str, version: str):
         self.__name = name
@@ -11,8 +12,11 @@ class Application:
 
         self.__parser = argparse.ArgumentParser()
         self.__subparser = self.__parser.add_subparsers(title='available commands')
-        self.__parser.add_argument('--version', action='version', version=self.__name + ' ' + self.__version)
-        self.__parser.set_defaults(func=lambda x, y: self.__parser.print_usage())
+
+        self.__log = Logger(Output())
+
+        # Configure the command parser
+        self.__configure_parser(self.__parser)
 
     @property
     def version(self) -> str:
@@ -27,15 +31,22 @@ class Application:
     def run(self) -> int:
         '''Start the application'''
         (args, extras) = self.__parser.parse_known_args()
-        args.func(args, extras)
-
-    def configure(self, func: callable) -> None:
-        '''Additional configuration for the application'''
-        func(self.__parser)
+        self.__log.verbosity = -1 if args.quiet else args.verbosity
+        args.handler(args, extras)
 
     def register_command(self, command: str, cls):
         '''Register a new command'''
-        controller = cls()
+        controller = cls(self.__log)
         parser = self.__subparser.add_parser(command, help=controller.help)
-        parser.set_defaults(func=controller.handle)
+        parser.set_defaults(handler=controller.handle)
         controller.configure(parser)
+
+    def __configure_parser(self, parser) -> None:
+        '''Additional configuration for the application'''
+        parser.add_argument('--version', action='version', version=self.__name + ' ' + self.__version)
+        parser.set_defaults(func=lambda args, extras: self.__parser.print_usage())
+
+        output_group = parser.add_mutually_exclusive_group()
+        output_group.add_argument('-q', '--quiet', action='store_true', help='suppress all command output')
+        output_group.add_argument('-v', '--verbose', dest='verbosity', default=0, action='count', help='increase output verbosity')
+
