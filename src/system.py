@@ -11,3 +11,10 @@ def run(command) -> Tuple[int, str]:
         result.returncode,
         (result.stdout or result.stderr).decode('utf-8').rstrip()
     )
+
+class System:
+    '''System interface wrapper'''
+
+    def run(self, command):
+        '''Run a command'''
+        return run(command)

@@ -16,6 +16,8 @@ class JsonRpcCommand(Command):
     def handle(self, args, extras):
         '''Handle the command'''
         print('in handle()')
-        print(args)
+        print(args['command'])
         print(extras)
         self.log.error('this is a message', 'v')
+        self.returncode = 1
+        self.log.info(self.sys.run('ls /tmp'), 'v')
